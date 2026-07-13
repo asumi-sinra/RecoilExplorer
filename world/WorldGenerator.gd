@@ -5,8 +5,10 @@ const HEIGHT := 4
 
 var chunks : Array = []
 
+@onready var phase_generator = $"../PhaseGenerator"
 
-func generate():
+
+func generate(world_seed : int = 0):
 
 	chunks.clear()
 
@@ -22,4 +24,25 @@ func generate():
 
 		chunks.append(row)
 
-	print("Chunk Count :", WIDTH * HEIGHT)
+	phase_generator.generate(chunks, world_seed)
+
+	debug_print_chunks()
+
+
+func debug_print_chunks():
+
+	print("============================")
+
+	for row in chunks:
+
+		for chunk in row:
+
+			print(
+				chunk.coord,
+				"  ",
+				chunk.biome.display_name,
+				"  connection = ",
+				chunk.connection
+			)
+
+	print("============================")

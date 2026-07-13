@@ -2,7 +2,8 @@ class_name ChunkData
 
 var coord : Vector2i
 
-var biome : Enums.BiomeType
+# BiomeTypeではなくBiomeDataを保持する
+var biome : BiomeData
 
 var connection : int
 
@@ -15,7 +16,7 @@ func _init(pos : Vector2i):
 
 	coord = pos
 
-	biome = Enums.BiomeType.NONE
+	biome = null
 
 	connection = Enums.Connection.NONE
 
