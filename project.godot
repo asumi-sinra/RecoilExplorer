@@ -13,8 +13,3 @@ config_version=5
 config/name="RecoilExplorer"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
-
-[autoload]
-
-GameManager="*res://autoload/GameManager.gd"
-RoomDatabase="*res://autoload/RoomDatabase.gd"

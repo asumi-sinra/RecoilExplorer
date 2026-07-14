@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://bximjrsu77gvg"]
-
-[ext_resource type="Script" path="res://world/DebugMap.gd" id="1_cqm0j"]
-
-[node name="DebugMap" type="Node"]
-script = ExtResource("1_cqm0j")
