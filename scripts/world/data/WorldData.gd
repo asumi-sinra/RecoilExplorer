@@ -63,3 +63,21 @@ func get_neighbor(
 	return get_chunk(
 		chunk.coord + offset
 	)
+
+func get_direction_offset(dir:Enums.Direction)->Vector2i:
+
+	match dir:
+
+		Enums.Direction.DOWN:
+			return Vector2i.DOWN
+
+		Enums.Direction.LEFT:
+			return Vector2i.LEFT
+
+		Enums.Direction.UP:
+			return Vector2i.UP
+
+		Enums.Direction.RIGHT:
+			return Vector2i.RIGHT
+
+	return Vector2i.ZERO
