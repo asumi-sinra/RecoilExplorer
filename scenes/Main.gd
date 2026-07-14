@@ -7,17 +7,15 @@ func _ready():
 
 	world.create_empty()
 
-	var biome_generator := BiomeGenerator.new()
-	biome_generator.generate(world)
+	BiomeGenerator.new().generate(world)
 
-	var connection_generator := ConnectionGenerator.new()
-	connection_generator.generate(world)
+	ConnectionGenerator.new().generate(world)
 
 	print_connections(world)
 
 
 
-func print_connections(world: WorldData):
+func print_connections(world:WorldData):
 
 	for y in range(WorldData.HEIGHT):
 
@@ -25,13 +23,12 @@ func print_connections(world: WorldData):
 
 		for x in range(WorldData.WIDTH):
 
-			var chunk := world.get_chunk(Vector2i(x, y))
+			var chunk := world.get_chunk(Vector2i(x,y))
 
 			line += "□"
 
 			if chunk.right.connected:
 				line += "──"
-
 			else:
 				line += "  "
 
