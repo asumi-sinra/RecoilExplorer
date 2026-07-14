@@ -1,5 +1,12 @@
 class_name Enums
 
+enum Direction {
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN
+}
+
 enum Connection {
 	NONE = 0,
 	LEFT = 1,
