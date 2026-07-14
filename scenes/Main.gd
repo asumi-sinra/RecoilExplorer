@@ -10,12 +10,9 @@ func _ready():
 
 	biome_generator.generate(world)
 
-	for row in world.chunks:
-
-		var line := ""
-
-		for chunk in row:
-
-			line += chunk.biome.display_name.left(1) + " "
-
-		print(line)
+	print(
+		world.get_neighbor(
+			world.get_chunk(Vector2i(3,2)),
+			Enums.Direction.RIGHT
+		).coord
+	)

@@ -7,11 +7,16 @@ var volcano : BiomeData = preload("res://resources/biome/Volcano.tres")
 
 func generate(world : WorldData):
 
-	for row in world.chunks:
+	for y in range(WorldData.HEIGHT):
 
-		for chunk in row:
+		for x in range(WorldData.WIDTH):
 
-			if chunk.coord.x < WorldData.WIDTH / 2:
+			var chunk = world.get_chunk(
+				Vector2i(x,y)
+			)
+			
+			if x < WorldData.WIDTH / 2:
 				chunk.biome = forest
+				
 			else:
 				chunk.biome = volcano
