@@ -1,24 +1,42 @@
 class_name ChunkData
 
-var coord: Vector2i
+var coord : Vector2i
 
-var biome: BiomeData
+var biome : BiomeData
 
-var connection: int
+var room : RoomData
 
-var room: RoomData
+var difficulty : int
 
-var difficulty: int
+var connections : Dictionary
 
 
-func _init(pos: Vector2i):
+func _init(pos : Vector2i):
 
 	coord = pos
 
 	biome = null
 
-	connection = Enums.Connection.NONE
-
 	room = null
 
 	difficulty = 0
+
+	connections = {
+
+		Enums.Direction.LEFT:
+			ConnectionData.new(Enums.Direction.LEFT),
+
+		Enums.Direction.RIGHT:
+			ConnectionData.new(Enums.Direction.RIGHT),
+
+		Enums.Direction.UP:
+			ConnectionData.new(Enums.Direction.UP),
+
+		Enums.Direction.DOWN:
+			ConnectionData.new(Enums.Direction.DOWN)
+	}
+
+
+func get_connection(dir : Enums.Direction) -> ConnectionData:
+
+	return connections[dir]

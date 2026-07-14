@@ -6,13 +6,24 @@ func _ready():
 
 	world.create_empty()
 
-	var biome_generator = BiomeGenerator.new()
+	var chunk = world.get_chunk(Vector2i(5,2))
 
-	biome_generator.generate(world)
+	chunk.get_connection(
+		Enums.Direction.RIGHT
+	).connected = true
 
 	print(
-		world.get_neighbor(
-			world.get_chunk(Vector2i(3,2)),
+
+		chunk.get_connection(
 			Enums.Direction.RIGHT
-		).coord
+		).connected
+
+	)
+
+	print(
+
+		chunk.get_connection(
+			Enums.Direction.LEFT
+		).connected
+
 	)
