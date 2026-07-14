@@ -8,7 +8,11 @@ var room : RoomData
 
 var difficulty : int
 
-var connections : Dictionary
+
+var left : ConnectionData
+var right : ConnectionData
+var up : ConnectionData
+var down : ConnectionData
 
 
 func _init(pos : Vector2i):
@@ -21,22 +25,26 @@ func _init(pos : Vector2i):
 
 	difficulty = 0
 
-	connections = {
+	left = ConnectionData.new(Enums.Direction.LEFT)
+	right = ConnectionData.new(Enums.Direction.RIGHT)
+	up = ConnectionData.new(Enums.Direction.UP)
+	down = ConnectionData.new(Enums.Direction.DOWN)
+
+
+func get_connection(dir:Enums.Direction)->ConnectionData:
+
+	match dir:
 
 		Enums.Direction.LEFT:
-			ConnectionData.new(Enums.Direction.LEFT),
+			return left
 
 		Enums.Direction.RIGHT:
-			ConnectionData.new(Enums.Direction.RIGHT),
+			return right
 
 		Enums.Direction.UP:
-			ConnectionData.new(Enums.Direction.UP),
+			return up
 
 		Enums.Direction.DOWN:
-			ConnectionData.new(Enums.Direction.DOWN)
-	}
+			return down
 
-
-func get_connection(dir : Enums.Direction) -> ConnectionData:
-
-	return connections[dir]
+	return null
