@@ -5,7 +5,6 @@ class_name ChunkData
 # 基本情報
 # =========================
 
-# マップ全体における絶対座標
 var coord: Vector2i
 
 
@@ -13,28 +12,10 @@ var coord: Vector2i
 # 道・壁情報
 # =========================
 
-# 道の伸び方
-#
-# bit 0 = DOWN
-# bit 1 = LEFT
-# bit 2 = UP
-# bit 3 = RIGHT
 var road_bits: int = 0
 
-
-# 壁判定
-#
-# bit 0 = DOWN
-# bit 1 = LEFT
-# bit 2 = UP
-# bit 3 = RIGHT
 var wall_bits: int = 0
 
-
-# 道本数
-#
-# road_bitsの1の数。
-# 0～4
 var road_count: int = 0
 
 
@@ -42,25 +23,24 @@ var road_count: int = 0
 # バイオーム情報
 # =========================
 
-# 主バイオーム
 var main_biome: BiomeData = null
 
-
-# 副バイオーム
-#
-# バイオーム境界付近のグラデーションなどに使用する。
 var sub_biome: BiomeData = null
+
+
+# =========================
+# Room情報
+# =========================
+
+var room: RoomData = null
 
 
 # =========================
 # フェーズ間通路
 # =========================
 
-# 前フェーズからこのチャンクに入る通路か
 var is_prev_phase_gate: bool = false
 
-
-# 次フェーズへ進むための通路か
 var is_next_phase_gate: bool = false
 
 

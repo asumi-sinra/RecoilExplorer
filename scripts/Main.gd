@@ -23,6 +23,7 @@ var biome_generator: BiomeGenerator
 var boundary_generator: BoundaryGenerator
 var wall_generator: WallGenerator
 var road_generator: RoadGenerator
+var gate_generator: GateGenerator
 
 
 func _ready() -> void:
@@ -53,6 +54,7 @@ func _ready() -> void:
 	boundary_generator = BoundaryGenerator.new()
 	wall_generator = WallGenerator.new()
 	road_generator = RoadGenerator.new()
+	gate_generator = GateGenerator.new()
 
 
 	# ---------------------------------
@@ -118,6 +120,28 @@ func _ready() -> void:
 
 
 	# ---------------------------------
+	# ⑤ 開始チャンク生成
+	# ---------------------------------
+
+	gate_generator.generate_start_gate(
+		world
+	)
+
+	print("Start gate generated.")
+
+
+	# ---------------------------------
+	# ⑥ ゴールチャンク生成
+	# ---------------------------------
+
+	gate_generator.generate_goal_gates(
+		world
+	)
+
+	print("Goal gates generated.")
+
+
+	# ---------------------------------
 	# デバッグ表示
 	# ---------------------------------
 
@@ -128,6 +152,8 @@ func _ready() -> void:
 	print_roads()
 
 	print_road_counts()
+
+	print_gates()
 
 	print("========== World Generation End ==========")
 
@@ -238,6 +264,7 @@ func print_roads() -> void:
 
 			line += " "
 
+
 		print(line)
 
 
@@ -266,6 +293,45 @@ func print_road_counts() -> void:
 
 			line += " "
 
+
+		print(line)
+
+
+# =========================
+# ゲート表示
+# =========================
+
+func print_gates() -> void:
+
+	print("")
+	print("----- Gate Map -----")
+
+	for y in range(WorldData.HEIGHT):
+
+		var line := ""
+
+		for x in range(WorldData.WIDTH):
+
+			var chunk := world.get_chunk(
+				Vector2i(x, y)
+			)
+
+			var symbol := "."
+
+			# 開始地点
+			if chunk.is_prev_phase_gate:
+
+				symbol = "S"
+
+			# ゴール地点
+			if chunk.is_next_phase_gate:
+
+				symbol = "G"
+
+			line += symbol
+			line += " "
+
+
 		print(line)
 
 
@@ -288,5 +354,6 @@ func get_bit_string(
 		else:
 
 			result += "0"
+
 
 	return result
