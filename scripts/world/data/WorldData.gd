@@ -1,70 +1,77 @@
 class_name WorldData
 
-const WIDTH := 16
-const HEIGHT := 4
 
-var chunks : Array = []
+# =========================
+# マップサイズ
+# =========================
+
+const WIDTH: int = 16
+const HEIGHT: int = 4
 
 
-func create_empty():
+# =========================
+# チャンク
+# =========================
+
+var chunks: Array = []
+
+
+# =========================
+# 初期化
+# =========================
+
+func create_empty() -> void:
 
 	chunks.clear()
 
 	for y in range(HEIGHT):
 
-		var row : Array = []
+		var row: Array = []
 
 		for x in range(WIDTH):
 
-			row.append(
-				ChunkData.new(Vector2i(x,y))
+			var chunk := ChunkData.new(
+				Vector2i(x, y)
 			)
+
+			row.append(chunk)
 
 		chunks.append(row)
 
 
-func is_inside(pos:Vector2i)->bool:
+# =========================
+# 範囲判定
+# =========================
 
-	return pos.x >= 0 \
-		and pos.x < WIDTH \
-		and pos.y >= 0 \
+func is_inside(pos: Vector2i) -> bool:
+
+	return (
+		pos.x >= 0
+		and pos.x < WIDTH
+		and pos.y >= 0
 		and pos.y < HEIGHT
+	)
 
 
-func get_chunk(pos:Vector2i)->ChunkData:
+# =========================
+# チャンク取得
+# =========================
 
-	if !is_inside(pos):
+func get_chunk(pos: Vector2i) -> ChunkData:
+
+	if not is_inside(pos):
 		return null
 
 	return chunks[pos.y][pos.x]
 
 
-func get_neighbor(
-	chunk:ChunkData,
-	dir:Enums.Direction
-)->ChunkData:
+# =========================
+# 方向 → 座標差
+# =========================
 
-	var offset := Vector2i.ZERO
-
-	match dir:
-
-		Enums.Direction.LEFT:
-			offset = Vector2i.LEFT
-
-		Enums.Direction.RIGHT:
-			offset = Vector2i.RIGHT
-
-		Enums.Direction.UP:
-			offset = Vector2i.UP
-
-		Enums.Direction.DOWN:
-			offset = Vector2i.DOWN
-
-	return get_chunk(
-		chunk.coord + offset
-	)
-
-func get_direction_offset(dir:Enums.Direction)->Vector2i:
+func get_direction_offset(
+	dir: Enums.Direction
+) -> Vector2i:
 
 	match dir:
 
@@ -81,3 +88,19 @@ func get_direction_offset(dir:Enums.Direction)->Vector2i:
 			return Vector2i.RIGHT
 
 	return Vector2i.ZERO
+
+
+# =========================
+# 隣接チャンク取得
+# =========================
+
+func get_neighbor(
+	chunk: ChunkData,
+	dir: Enums.Direction
+) -> ChunkData:
+
+	var offset := get_direction_offset(dir)
+
+	return get_chunk(
+		chunk.coord + offset
+	)
