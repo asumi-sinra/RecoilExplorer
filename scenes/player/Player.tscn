@@ -1,0 +1,48 @@
+[gd_scene load_steps=7 format=3 uid="uid://cv5xj5d6kf0i8"]
+
+[ext_resource type="Script" path="res://scripts/Player.gd" id="1_fy324"]
+[ext_resource type="Texture2D" uid="uid://cbpkyno8okkac" path="res://icon.svg" id="2_4wrsq"]
+[ext_resource type="Script" path="res://scripts/control/Aim.gd" id="3_qxn34"]
+[ext_resource type="PackedScene" uid="uid://cin3d5a0y8exx" path="res://scenes/guns/Gun.tscn" id="4_qnnng"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rckfj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_4wrsq")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c50dl"]
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_fy324")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_rckfj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(9, 9)
+shape = SubResource("CircleShape2D_c50dl")
+
+[node name="Aim" type="Node2D" parent="."]
+script = ExtResource("3_qxn34")
+
+[node name="Mouse_Crosshair" type="Node2D" parent="Aim"]
+
+[node name="Line2D" type="Line2D" parent="Aim/Mouse_Crosshair"]
+points = PackedVector2Array(50, 0, -50, 0)
+width = 100.0
+default_color = Color(0, 1, 0, 1)
+
+[node name="Gamepad_Arrow" type="Node2D" parent="Aim"]
+
+[node name="Line2D" type="Line2D" parent="Aim/Gamepad_Arrow"]
+points = PackedVector2Array(0, 0, 150, 0)
+width = 30.0
+default_color = Color(1, 0, 0, 1)
+
+[node name="Gun" parent="." instance=ExtResource("4_qnnng")]

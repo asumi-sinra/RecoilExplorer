@@ -340,54 +340,54 @@ func _ready() -> void:
 ## 矢印キー = RoomExitと同じ処理
 ## =========================
 
-func _unhandled_input(
-	event: InputEvent
-) -> void:
-
-	if room_manager == null:
-		return
-
-
-	if event.is_action_pressed(
-		"ui_left"
-	):
-
-		room_manager.request_transition(
-			Enums.Direction.LEFT
-		)
-
-		return
+#func _unhandled_input(
+#	event: InputEvent
+#) -> void:
+#
+#	if room_manager == null:
+#		return
 
 
-	if event.is_action_pressed(
-		"ui_right"
-	):
-
-		room_manager.request_transition(
-			Enums.Direction.RIGHT
-		)
-
-		return
-
-
-	if event.is_action_pressed(
-		"ui_up"
-	):
-
-		room_manager.request_transition(
-			Enums.Direction.UP
-		)
-
-		return
-
-
-	if event.is_action_pressed(
-		"ui_down"
-	):
-
-		room_manager.request_transition(
-			Enums.Direction.DOWN
-		)
+#	if event.is_action_pressed(
+#		"ui_left"
+#	):
+#
+#		room_manager.request_transition(
+#			Enums.Direction.LEFT
+#		)
+#
+#		return
+#
+#
+#	if event.is_action_pressed(
+#		"ui_right"
+#	):
+#
+#		room_manager.request_transition(
+#			Enums.Direction.RIGHT
+#		)
+#
+#		return
+#
+#
+#	if event.is_action_pressed(
+#		"ui_up"
+#	):
+#
+#		room_manager.request_transition(
+#			Enums.Direction.UP
+#		)
+#
+#		return
+#
+#
+#	if event.is_action_pressed(
+#		"ui_down"
+#	):
+#
+#		room_manager.request_transition(
+#			Enums.Direction.DOWN
+#		)
 
 
 ## =========================

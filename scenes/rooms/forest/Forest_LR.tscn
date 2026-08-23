@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://c4n0awdn8ki4e"]
+[gd_scene load_steps=7 format=3 uid="uid://c4n0awdn8ki4e"]
 
 [ext_resource type="Script" path="res://scripts/world/room/Room.gd" id="1_5k1on"]
 [ext_resource type="Script" path="res://scripts/world/room/RoomExit.gd" id="2_dfvt4"]
+[ext_resource type="Texture2D" uid="uid://cbpkyno8okkac" path="res://icon.svg" id="2_oa5t0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lbep4"]
 
@@ -12,13 +13,20 @@
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_5k1on")
 
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -5
+position = Vector2(523, -857)
+scale = Vector2(30, 30)
+texture = ExtResource("2_oa5t0")
+
 [node name="SpawnFromLeft" type="Marker2D" parent="."]
-position = Vector2(136, 160)
+position = Vector2(-1165, 67)
 
 [node name="SpawnFromRight" type="Marker2D" parent="."]
-position = Vector2(1049, 552)
+position = Vector2(2183, 710)
 
 [node name="ExitLeft" type="Area2D" parent="."]
+position = Vector2(-1332, 54)
 script = ExtResource("2_dfvt4")
 direction = 1
 
@@ -28,16 +36,18 @@ scale = Vector2(10, 40)
 shape = SubResource("RectangleShape2D_lbep4")
 
 [node name="ExitRight" type="Area2D" parent="."]
+position = Vector2(1247, 107)
 script = ExtResource("2_dfvt4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitRight"]
-position = Vector2(1212, 346)
+position = Vector2(1182, 284)
 scale = Vector2(10, 40)
 shape = SubResource("RectangleShape2D_7k20h")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(-83, 247)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(560, 750)
-scale = Vector2(80, 10)
+position = Vector2(607, 654)
+scale = Vector2(200, 10)
 shape = SubResource("RectangleShape2D_r6qk5")

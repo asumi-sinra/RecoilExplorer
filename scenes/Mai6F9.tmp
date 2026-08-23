@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://fbjb5v62f5r8"]
+[gd_scene load_steps=10 format=3 uid="uid://fbjb5v62f5r8"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_tn8ap"]
 [ext_resource type="Script" path="res://resources/BiomeData.gd" id="2_3wel0"]
@@ -7,7 +7,6 @@
 [ext_resource type="Resource" uid="uid://dkt40haojay4l" path="res://resources/biome/Volcano.tres" id="3_lutjb"]
 [ext_resource type="Resource" uid="uid://bshvj8tfdy4c7" path="res://resources/rooms/forest/ForestRD.tres" id="4_7gata"]
 [ext_resource type="PackedScene" uid="uid://cv5xj5d6kf0i8" path="res://scenes/player/Player.tscn" id="7_056s4"]
-[ext_resource type="Script" path="res://scripts/UI/Camera.gd" id="8_f4wwk"]
 
 [sub_resource type="Resource" id="Resource_lk8wf"]
 script = ExtResource("2_3wel0")
@@ -27,6 +26,3 @@ available_biomes = Array[ExtResource("2_3wel0")]([ExtResource("2_p5ifv"), ExtRes
 available_rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([ExtResource("3_2it8h"), ExtResource("4_7gata")])
 
 [node name="Player" parent="." instance=ExtResource("7_056s4")]
-
-[node name="Camera2D" type="Camera2D" parent="."]
-script = ExtResource("8_f4wwk")
