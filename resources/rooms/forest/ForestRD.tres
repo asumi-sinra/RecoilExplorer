@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://bshvj8tfdy4c7"]
+
+[ext_resource type="Script" path="res://scripts/world/data/RoomData.gd" id="1_acr3f"]
+[ext_resource type="Resource" uid="uid://4xhiv3gxanta" path="res://resources/biome/Forest.tres" id="1_tfq71"]
+[ext_resource type="PackedScene" uid="uid://6150ir5la6ts" path="res://scenes/rooms/forest/Forest_RD.tscn" id="2_6cvsi"]
+
+[resource]
+script = ExtResource("1_acr3f")
+display_name = "Forest_RD"
+biome = ExtResource("1_tfq71")
+scene = ExtResource("2_6cvsi")
+exits = Array[int]([3, 0])

@@ -1,19 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://fbjb5v62f5r8"]
+[gd_scene load_steps=9 format=3 uid="uid://fbjb5v62f5r8"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_tn8ap"]
 [ext_resource type="Script" path="res://resources/BiomeData.gd" id="2_3wel0"]
-
-[sub_resource type="Resource" id="Resource_x60k4"]
-script = ExtResource("2_3wel0")
-display_name = "Forest"
-background_color = Color(0, 1, 0, 1)
-rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([])
-
-[sub_resource type="Resource" id="Resource_x8y16"]
-script = ExtResource("2_3wel0")
-display_name = "Volcano"
-background_color = Color(1, 0, 0, 1)
-rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([])
+[ext_resource type="Resource" uid="uid://4xhiv3gxanta" path="res://resources/biome/Forest.tres" id="2_p5ifv"]
+[ext_resource type="Resource" uid="uid://qk58m46dpa3i" path="res://resources/rooms/forest/ForestLR.tres" id="3_2it8h"]
+[ext_resource type="Resource" uid="uid://dkt40haojay4l" path="res://resources/biome/Volcano.tres" id="3_lutjb"]
+[ext_resource type="Resource" uid="uid://bshvj8tfdy4c7" path="res://resources/rooms/forest/ForestRD.tres" id="4_7gata"]
 
 [sub_resource type="Resource" id="Resource_lk8wf"]
 script = ExtResource("2_3wel0")
@@ -23,10 +15,11 @@ rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([])
 
 [sub_resource type="Resource" id="Resource_6lsdr"]
 script = ExtResource("2_3wel0")
-display_name = "Dessert"
+display_name = "Desert"
 background_color = Color(1, 1, 0, 1)
 rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([])
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_tn8ap")
-available_biomes = Array[ExtResource("2_3wel0")]([SubResource("Resource_x60k4"), SubResource("Resource_x8y16"), SubResource("Resource_lk8wf"), SubResource("Resource_6lsdr")])
+available_biomes = Array[ExtResource("2_3wel0")]([ExtResource("2_p5ifv"), ExtResource("3_lutjb"), SubResource("Resource_lk8wf"), SubResource("Resource_6lsdr")])
+available_rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([ExtResource("3_2it8h"), ExtResource("4_7gata")])
