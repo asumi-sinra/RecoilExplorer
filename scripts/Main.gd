@@ -9,17 +9,10 @@ extends Node2D
 
 
 ## =========================
-## 使用するRoom
-## =========================
-
-@export var available_rooms: Array[RoomData]
-
-
-## =========================
 ## Player
 ## =========================
 
-@onready var player: CharacterBody2D = $Player
+var player: CharacterBody2D = null
 
 
 ## =========================
@@ -35,6 +28,7 @@ var world: WorldData
 
 var room_manager: RoomManager
 var transition_layer: TransitionLayer
+var room_validator: RoomValidator
 
 
 ## =========================
@@ -57,7 +51,58 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## Player設定
+	## Player取得
+	## ---------------------------------
+
+	var player_node: Node = get_node_or_null(
+		"Player"
+	)
+
+
+	if player_node == null:
+
+		push_error(
+			"Main: 子ノード Player が見つかりません。"
+		)
+
+		push_error(
+			"Main.tscn の構造を確認してください。"
+		)
+
+		return
+
+
+	if not player_node is CharacterBody2D:
+
+		push_error(
+			"Main: Player は存在しますが、"
+			+ "CharacterBody2Dではありません。"
+		)
+
+		push_error(
+			"実際の型: "
+			+ player_node.get_class()
+		)
+
+		return
+
+
+	player = player_node as CharacterBody2D
+
+
+	print(
+		"Player found: ",
+		player
+	)
+
+	print(
+		"Player path: ",
+		player.get_path()
+	)
+
+
+	## ---------------------------------
+	## Playerグループ設定
 	## ---------------------------------
 
 	if not player.is_in_group(
@@ -94,6 +139,7 @@ func _ready() -> void:
 	road_generator = RoadGenerator.new()
 	inter_biome_generator = InterBiomeGenerator.new()
 	gate_generator = GateGenerator.new()
+	room_validator = RoomValidator.new()
 
 
 	var room_generator_script = preload(
@@ -104,7 +150,31 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ① バイオーム抽選
+	## ① RoomData検査
+	## ---------------------------------
+
+	var rooms_valid: bool = (
+		room_validator.validate_all(
+			available_biomes
+		)
+	)
+
+
+	if not rooms_valid:
+
+		push_error(
+			"Main: RoomDataまたはRoomシーンに不整合があります。"
+		)
+
+		push_error(
+			"Main: マップ生成を中止します。"
+		)
+
+		return
+
+
+	## ---------------------------------
+	## ② バイオーム抽選
 	## ---------------------------------
 
 	var selected_biomes: Array[BiomeData] = (
@@ -136,7 +206,7 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ② バイオーム境界決定
+	## ③ バイオーム境界決定
 	## ---------------------------------
 
 	boundary_generator.generate(
@@ -148,7 +218,7 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ③ 壁決定
+	## ④ 壁決定
 	## ---------------------------------
 
 	wall_generator.generate(
@@ -159,7 +229,7 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ④ バイオーム内部の道生成
+	## ⑤ バイオーム内部の道生成
 	## ---------------------------------
 
 	road_generator.generate(
@@ -170,7 +240,7 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ⑤ バイオーム間通路生成
+	## ⑥ バイオーム間通路生成
 	## ---------------------------------
 
 	inter_biome_generator.generate(
@@ -182,7 +252,7 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ⑥ 開始チャンク生成
+	## ⑦ 開始チャンク生成
 	## ---------------------------------
 
 	gate_generator.generate_start_gate(
@@ -193,7 +263,7 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ⑦ ゴールチャンク生成
+	## ⑧ ゴールチャンク生成
 	## ---------------------------------
 
 	gate_generator.generate_goal_gates(
@@ -204,13 +274,12 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ⑧ RoomData割り当て
+	## ⑨ RoomData割り当て
 	## ---------------------------------
 
 	var assigned_room_count: int = (
 		room_generator.generate(
-			world,
-			available_rooms
+			world
 		)
 	)
 
@@ -238,7 +307,7 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ⑨ TransitionLayer作成
+	## ⑩ TransitionLayer作成
 	## ---------------------------------
 
 	transition_layer = TransitionLayer.new()
@@ -250,7 +319,7 @@ func _ready() -> void:
 
 
 	## ---------------------------------
-	## ⑩ RoomManager作成
+	## ⑪ RoomManager作成
 	## ---------------------------------
 
 	room_manager = RoomManager.new()
@@ -327,67 +396,63 @@ func _ready() -> void:
 		"PlayerはRoomExitに触れると隣Roomへ移動します。"
 	)
 
-	print(
-		"矢印キーによるデバッグ遷移も引き続き使用できます。"
-	)
-
 
 	print("========== World Generation End ==========")
 
 
 ## =========================
-## デバッグ用
-## 矢印キー = RoomExitと同じ処理
+## デバッグ用Room切り替え
+## 現在は無効
 ## =========================
 
-#func _unhandled_input(
-#	event: InputEvent
-#) -> void:
-#
-#	if room_manager == null:
-#		return
-
-
-#	if event.is_action_pressed(
-#		"ui_left"
-#	):
-#
-#		room_manager.request_transition(
-#			Enums.Direction.LEFT
-#		)
-#
-#		return
-#
-#
-#	if event.is_action_pressed(
-#		"ui_right"
-#	):
-#
-#		room_manager.request_transition(
-#			Enums.Direction.RIGHT
-#		)
-#
-#		return
-#
-#
-#	if event.is_action_pressed(
-#		"ui_up"
-#	):
-#
-#		room_manager.request_transition(
-#			Enums.Direction.UP
-#		)
-#
-#		return
-#
-#
-#	if event.is_action_pressed(
-#		"ui_down"
-#	):
-#
-#		room_manager.request_transition(
-#			Enums.Direction.DOWN
-#		)
+## func _unhandled_input(
+## 	event: InputEvent
+## ) -> void:
+##
+## 	if room_manager == null:
+## 		return
+##
+##
+## 	if event.is_action_pressed(
+## 		"ui_left"
+## 	):
+##
+## 		room_manager.request_transition(
+## 			Enums.Direction.LEFT
+## 		)
+##
+## 		return
+##
+##
+## 	if event.is_action_pressed(
+## 		"ui_right"
+## 	):
+##
+## 		room_manager.request_transition(
+## 			Enums.Direction.RIGHT
+## 		)
+##
+## 		return
+##
+##
+## 	if event.is_action_pressed(
+## 		"ui_up"
+## 	):
+##
+## 		room_manager.request_transition(
+## 			Enums.Direction.UP
+## 		)
+##
+## 		return
+##
+##
+## 	if event.is_action_pressed(
+## 		"ui_down"
+## 	):
+##
+## 		room_manager.request_transition(
+## 			Enums.Direction.DOWN
+## 		)
 
 
 ## =========================
@@ -422,10 +487,6 @@ func get_initial_chunk() -> ChunkData:
 				fallback_chunk = chunk
 
 
-	## -------------------------
-	## 本来の開始Chunk
-	## -------------------------
-
 	if (
 		start_gate != null
 		and start_gate.room != null
@@ -433,10 +494,6 @@ func get_initial_chunk() -> ChunkData:
 
 		return start_gate
 
-
-	## -------------------------
-	## 開発中用Fallback
-	## -------------------------
 
 	if start_gate != null:
 
@@ -769,8 +826,7 @@ func print_missing_room_patterns() -> void:
 
 	var missing_patterns: Array[String] = (
 		room_generator.get_missing_patterns(
-			world,
-			available_rooms
+			world
 		)
 	)
 
@@ -807,7 +863,10 @@ func get_bit_string(
 
 	for i in range(3, -1, -1):
 
-		if (value & (1 << i)) != 0:
+		if (
+			value
+			& (1 << i)
+		) != 0:
 
 			result += "1"
 

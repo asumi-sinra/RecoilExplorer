@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://1p6022wuettn"]
+
+[ext_resource type="Script" path="res://scripts/world/data/RoomData.gd" id="1_jblbg"]
+[ext_resource type="PackedScene" uid="uid://c4n0awdn8ki4e" path="res://scenes/rooms/forest/Forest_LR.tscn" id="1_shr1j"]
+
+[resource]
+script = ExtResource("1_jblbg")
+display_name = "Forest_LR"
+scene = ExtResource("1_shr1j")
+exits = Array[int]([1, 3])

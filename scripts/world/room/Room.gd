@@ -2,7 +2,9 @@ extends Node2D
 class_name RoomScene
 
 
-signal exit_requested(direction: Enums.Direction)
+signal exit_requested(
+	direction: Enums.Direction
+)
 
 
 func _ready() -> void:
@@ -27,6 +29,7 @@ func _connect_room_exits(
 			var room_exit: RoomExit = (
 				child as RoomExit
 			)
+
 
 			room_exit.exit_requested.connect(
 				_on_exit_requested
@@ -89,8 +92,11 @@ func get_spawn_marker(
 			return null
 
 
-	var node: Node = get_node_or_null(
-		marker_name
+	## Room内を再帰的に検索
+	var node: Node = find_child(
+		marker_name,
+		true,
+		false
 	)
 
 
