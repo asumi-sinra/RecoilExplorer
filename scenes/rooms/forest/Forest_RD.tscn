@@ -1,3 +1,43 @@
-[gd_scene format=3 uid="uid://6150ir5la6ts"]
+[gd_scene load_steps=6 format=3 uid="uid://6150ir5la6ts"]
 
-[node name="ForestRd" type="Node2D"]
+[ext_resource type="Script" path="res://scripts/world/room/Room.gd" id="1_0jnlc"]
+[ext_resource type="Script" path="res://scripts/world/room/RoomExit.gd" id="2_mc7of"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3e8ge"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bfk26"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cnvnx"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_0jnlc")
+
+[node name="SpawnFromRight" type="Marker2D" parent="."]
+position = Vector2(1056, 322)
+
+[node name="SpawnFromDown" type="Marker2D" parent="."]
+position = Vector2(995, 574)
+
+[node name="ExitRight" type="Area2D" parent="."]
+script = ExtResource("2_mc7of")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitRight"]
+position = Vector2(1235, 319)
+scale = Vector2(10, 40)
+shape = SubResource("RectangleShape2D_3e8ge")
+
+[node name="ExitDown" type="Area2D" parent="."]
+script = ExtResource("2_mc7of")
+direction = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDown"]
+position = Vector2(263, 679)
+scale = Vector2(60, 10)
+shape = SubResource("RectangleShape2D_bfk26")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(560, 750)
+scale = Vector2(80, 10)
+shape = SubResource("RectangleShape2D_cnvnx")
