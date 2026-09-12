@@ -1,11 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://6150ir5la6ts"]
+[gd_scene load_steps=7 format=3 uid="uid://6150ir5la6ts"]
 
 [ext_resource type="Script" path="res://scripts/world/room/Room.gd" id="1_0jnlc"]
+[ext_resource type="Texture2D" uid="uid://cbpkyno8okkac" path="res://icon.svg" id="2_lm5mr"]
 [ext_resource type="Script" path="res://scripts/world/room/RoomExit.gd" id="2_mc7of"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3e8ge"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bfk26"]
+size = Vector2(2.31667, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cnvnx"]
 
@@ -15,6 +17,12 @@ script = ExtResource("1_0jnlc")
 [node name="SpawnFromRight" type="Marker2D" parent="."]
 position = Vector2(1056, 322)
 
+[node name="Sprite2D" type="Sprite2D" parent="SpawnFromRight"]
+z_index = -5
+position = Vector2(-635, 166)
+scale = Vector2(18.7188, 9.46484)
+texture = ExtResource("2_lm5mr")
+
 [node name="SpawnFromDown" type="Marker2D" parent="."]
 position = Vector2(995, 574)
 
@@ -22,7 +30,7 @@ position = Vector2(995, 574)
 script = ExtResource("2_mc7of")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitRight"]
-position = Vector2(1235, 319)
+position = Vector2(1136, 381)
 scale = Vector2(10, 40)
 shape = SubResource("RectangleShape2D_3e8ge")
 
@@ -31,13 +39,13 @@ script = ExtResource("2_mc7of")
 direction = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDown"]
-position = Vector2(263, 679)
+position = Vector2(-292.5, 682)
 scale = Vector2(60, 10)
 shape = SubResource("RectangleShape2D_bfk26")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(560, 750)
+position = Vector2(436, 923)
 scale = Vector2(80, 10)
 shape = SubResource("RectangleShape2D_cnvnx")

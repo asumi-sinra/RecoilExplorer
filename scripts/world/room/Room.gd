@@ -7,10 +7,70 @@ signal exit_requested(
 )
 
 
+## =========================
+## このRoomが表しているChunk
+## =========================
+
+var chunk_coord: Vector2i = Vector2i.ZERO
+
+
+## =========================
+## Biome情報
+## =========================
+
+var main_biome: BiomeData = null
+
+var sub_biome: BiomeData = null
+
+
+## =========================
+## 副Biomeが存在する方向
+##
+## -1 = 通常Room
+## =========================
+
+var sub_biome_direction: int = -1
+
+
 func _ready() -> void:
 
 	_connect_room_exits(
 		self
+	)
+
+
+	print_biome_context()
+
+
+## =========================
+## Chunk情報をRoomへ渡す
+##
+## RoomManagerからadd_child()前に
+## 呼び出される
+## =========================
+
+func setup_from_chunk(
+	chunk: ChunkData
+) -> void:
+
+	if chunk == null:
+
+		push_error(
+			"RoomScene: setup_from_chunk() に"
+			+ "nullのChunkが渡されました。"
+		)
+
+		return
+
+
+	chunk_coord = chunk.coord
+
+	main_biome = chunk.main_biome
+
+	sub_biome = chunk.sub_biome
+
+	sub_biome_direction = (
+		chunk.sub_biome_direction
 	)
 
 
@@ -92,7 +152,6 @@ func get_spawn_marker(
 			return null
 
 
-	## Room内を再帰的に検索
 	var node: Node = find_child(
 		marker_name,
 		true,
@@ -117,3 +176,87 @@ func get_spawn_marker(
 
 
 	return node as Marker2D
+
+
+## =========================
+## 境界Roomか
+## =========================
+
+func is_biome_transition_room() -> bool:
+
+	return (
+		sub_biome != null
+		and sub_biome_direction >= 0
+	)
+
+
+## =========================
+## Biome情報デバッグ表示
+## =========================
+
+func print_biome_context() -> void:
+
+	var main_name: String = "null"
+	var sub_name: String = "null"
+
+
+	if main_biome != null:
+
+		main_name = (
+			main_biome.display_name
+		)
+
+
+	if sub_biome != null:
+
+		sub_name = (
+			sub_biome.display_name
+		)
+
+
+	print(
+		"Room biome context: ",
+		"chunk=",
+		chunk_coord,
+		" main=",
+		main_name,
+		" sub=",
+		sub_name,
+		" sub_direction=",
+		get_direction_name(
+			sub_biome_direction
+		)
+	)
+
+
+## =========================
+## Direction名
+## =========================
+
+func get_direction_name(
+	direction: int
+) -> String:
+
+	match direction:
+
+		Enums.Direction.DOWN:
+
+			return "DOWN"
+
+
+		Enums.Direction.LEFT:
+
+			return "LEFT"
+
+
+		Enums.Direction.UP:
+
+			return "UP"
+
+
+		Enums.Direction.RIGHT:
+
+			return "RIGHT"
+
+
+	return "NONE"

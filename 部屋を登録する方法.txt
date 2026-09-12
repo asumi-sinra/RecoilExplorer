@@ -1,0 +1,229 @@
+6. この方式で今後どうRoomを増やすか
+
+これからは、
+
+小マップを作る
+        ↓
+RoomData.tresを作る
+        ↓
+Biomeを指定
+        ↓
+Exitsを指定
+        ↓
+Available Roomsへ追加
+        ↓
+生成対象になる
+
+だけです。
+
+例えば同じ Forest_1010 に対して、
+
+Forest_LR_A.tscn
+Forest_LR_B.tscn
+Forest_LR_C.tscn
+
+の3種類を作って、
+
+Forest_LR_A.tres
+Forest_LR_B.tres
+Forest_LR_C.tres
+
+を登録すれば、RoomGenerator は3候補からランダムに1つ選びます。
+
+これが当初やりたかった、
+
+「右と上方向に通路がある火山バイオームマップ」などを大量に用意して、生成されたチャンク情報に合わせて配置する
+
+仕組みのRoom選択部分になります。
+
+
+
+3. Forest_LR.tres をAvailable Roomsへ登録
+
+Main.tscn のルート Main を選び、Inspectorを開きます。
+
+Available Rooms
+
+を、
+
+Size = 1
+
+にして、
+
+[0] = Forest_LR.tres
+
+を設定してください。
+
+
+
+6. Forest_LRシーンを編集
+
+既存の Forest_LR のシーンを開いてください。
+
+ルートNode2Dを選択して、
+
+Room.gd
+
+をアタッチします。
+
+そして子に、
+
+Marker2D
+
+を2つ追加。
+
+名前を正確に、
+
+SpawnFromLeft
+SpawnFromRight
+
+にします。
+
+位置は自由です。
+
+例えば横長のRoomなら、
+
+SpawnFromLeft
+
+    ↓
+    ●
+┌────────────────────────────┐
+│                            │
+│                            │
+│                         ●  │
+└────────────────────────────┘
+                          ↑
+                  SpawnFromRight
+
+でも構いません。
+
+左右で高さが揃っている必要すらありません。
+
+7. Forest_LRにExitを作る
+
+次にルートの子として、
+
+Area2D
+
+を追加して、
+
+ExitLeft
+
+という名前にします。
+
+RoomExit.gd をアタッチ。
+
+Inspectorで、
+
+Direction = LEFT
+
+にします。
+
+その子に、
+
+CollisionShape2D
+
+を追加してください。
+
+Shapeは例えば、
+
+RectangleShape2D
+
+でOKです。
+
+ExitLeft
+
+という名前にします。
+
+RoomExit.gd をアタッチ。
+
+Inspectorで、
+
+Direction = LEFT
+
+にします。
+
+その子に、
+
+CollisionShape2D
+
+を追加してください。
+
+Shapeは例えば、
+
+RectangleShape2D
+
+でOKです。
+
+
+5. Forest_LR / Forest_RDをもう一度確認
+
+実際の接触遷移には Area2D のCollisionShapeが必要です。
+
+Forest_LR は例えば、
+
+Forest_LR
+├─ SpawnFromLeft        Marker2D
+├─ SpawnFromRight       Marker2D
+│
+├─ ExitLeft             Area2D + RoomExit.gd
+│  └─ CollisionShape2D
+│
+└─ ExitRight            Area2D + RoomExit.gd
+   └─ CollisionShape2D
+
+です。
+
+ExitLeft：
+
+Direction = LEFT
+
+ExitRight：
+
+Direction = RIGHT
+
+にします。
+
+6. SpawnPointはExitと少し離す
+
+これはかなり重要です。
+
+例えばRIGHTから隣Roomに移動すると、
+
+次Roomの SpawnFromLeft
+
+にPlayerが出ます。
+
+このMarkerを ExitLeft のCollisionShape内部に置いてしまうと、
+
+Room A → Room B
+          ↓
+SpawnFromLeft
+          ↓
+即座にExitLeftへ接触
+          ↓
+Room Aへ戻る
+
+という往復が発生する可能性があります。
+
+なので例えば、
+
+┌───────────────────────
+
+ExitLeft
+■■
+■■      ● SpawnFromLeft
+■■
+■■
+
+└───────────────────────
+
+のように、SpawnPointは出口判定Areaの内側ではなく、Room側へ少し離して配置してください。
+
+同じことが、
+
+SpawnFromRight
+SpawnFromUp
+SpawnFromDown
+
+にも当てはまります。

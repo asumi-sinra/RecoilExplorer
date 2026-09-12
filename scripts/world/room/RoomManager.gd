@@ -154,7 +154,8 @@ func load_chunk(
 		push_error(
 			"RoomManager: "
 			+ chunk.room.display_name
-			+ " のルートにRoom.gdをアタッチしてください。"
+			+ " のルートにRoom.gdを"
+			+ "アタッチしてください。"
 		)
 
 		instance.free()
@@ -164,6 +165,19 @@ func load_chunk(
 
 	var new_room: RoomScene = (
 		instance as RoomScene
+	)
+
+
+	## -------------------------
+	## Chunk情報を渡す
+	##
+	## add_child()より前に呼ぶことで、
+	## RoomScene._ready()が走る時点で
+	## Biome情報が設定済みになる
+	## -------------------------
+
+	new_room.setup_from_chunk(
+		chunk
 	)
 
 
@@ -178,11 +192,10 @@ func load_chunk(
 
 	## -------------------------
 	## 新しいRoom追加
-	##
-	## 全Roomを原点に置く
 	## -------------------------
 
 	new_room.position = Vector2.ZERO
+
 
 	add_child(
 		new_room
@@ -243,6 +256,18 @@ func load_chunk(
 		chunk.room.display_name,
 		"  chunk=",
 		chunk.coord,
+		"  main=",
+		get_biome_name(
+			chunk.main_biome
+		),
+		"  sub=",
+		get_biome_name(
+			chunk.sub_biome
+		),
+		"  sub_direction=",
+		get_direction_name(
+			chunk.sub_biome_direction
+		),
 		"  entry=",
 		get_direction_name(
 			entry_side
@@ -281,14 +306,17 @@ func request_transition(
 ) -> void:
 
 	if is_transitioning:
+
 		return
 
 
 	if world == null:
+
 		return
 
 
 	if current_chunk == null:
+
 		return
 
 
@@ -311,7 +339,7 @@ func request_transition(
 
 
 	## -------------------------
-	## 隣Chunk取得
+	## 隣Chunk
 	## -------------------------
 
 	var next_chunk: ChunkData = (
@@ -361,7 +389,7 @@ func request_transition(
 
 
 	## -------------------------
-	## 遷移先RoomData確認
+	## RoomData確認
 	## -------------------------
 
 	if next_chunk.room == null:
@@ -376,7 +404,7 @@ func request_transition(
 
 
 	## -------------------------
-	## 次Roomの入口方向
+	## 次Roomでは反対側から入る
 	## -------------------------
 
 	var entry_side: Enums.Direction = (
@@ -386,12 +414,12 @@ func request_transition(
 	)
 
 
-	## -------------------------
-	## 遷移開始
-	## -------------------------
-
 	is_transitioning = true
 
+
+	## -------------------------
+	## Player停止
+	## -------------------------
 
 	var previous_process_mode: int = (
 		Node.PROCESS_MODE_INHERIT
@@ -403,6 +431,7 @@ func request_transition(
 		previous_process_mode = (
 			player.process_mode
 		)
+
 
 		player.process_mode = (
 			Node.PROCESS_MODE_DISABLED
@@ -438,7 +467,7 @@ func request_transition(
 
 
 	## -------------------------
-	## Player操作復帰
+	## Player復帰
 	## -------------------------
 
 	if player != null:
@@ -472,6 +501,7 @@ func is_phase_exit(
 ) -> bool:
 
 	if current_chunk == null:
+
 		return false
 
 
@@ -525,6 +555,22 @@ func get_opposite_direction(
 
 
 	return Enums.Direction.DOWN
+
+
+## =========================
+## Biome名
+## =========================
+
+func get_biome_name(
+	biome: BiomeData
+) -> String:
+
+	if biome == null:
+
+		return "null"
+
+
+	return biome.display_name
 
 
 ## =========================

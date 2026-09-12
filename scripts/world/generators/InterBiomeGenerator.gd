@@ -35,7 +35,7 @@ func generate(
 
 
 ## =========================
-## 指定バイオーム間に通路を1つ作る
+## 指定Biome間に通路を1つ作る
 ## =========================
 
 func create_passage(
@@ -57,7 +57,7 @@ func create_passage(
 
 
 			## -------------------------
-			## 右隣との境界
+			## 右隣
 			## -------------------------
 
 			if x < WorldData.WIDTH - 1:
@@ -65,6 +65,7 @@ func create_passage(
 				var right: ChunkData = world.get_chunk(
 					Vector2i(x + 1, y)
 				)
+
 
 				if is_target_biome_pair(
 					current,
@@ -84,7 +85,7 @@ func create_passage(
 
 
 			## -------------------------
-			## 下隣との境界
+			## 下隣
 			## -------------------------
 
 			if y < WorldData.HEIGHT - 1:
@@ -92,6 +93,7 @@ func create_passage(
 				var down: ChunkData = world.get_chunk(
 					Vector2i(x, y + 1)
 				)
+
 
 				if is_target_biome_pair(
 					current,
@@ -123,7 +125,9 @@ func create_passage(
 		return
 
 
-	var selected: Vector4i = candidates.pick_random()
+	var selected: Vector4i = (
+		candidates.pick_random()
+	)
 
 
 	var first: ChunkData = world.get_chunk(
@@ -161,7 +165,7 @@ func create_passage(
 
 
 ## =========================
-## 対象バイオームの組み合わせか
+## 対象Biomeの組み合わせか
 ## =========================
 
 func is_target_biome_pair(
@@ -191,7 +195,7 @@ func is_target_biome_pair(
 
 
 ## =========================
-## 2チャンク間の壁を開けて道を作る
+## 2Chunk間の壁を開ける
 ## =========================
 
 func open_passage(
@@ -205,6 +209,10 @@ func open_passage(
 	)
 
 
+	## -------------------------
+	## BがAの右
+	## -------------------------
+
 	if delta == Vector2i.RIGHT:
 
 		chunk_a.remove_wall(
@@ -215,6 +223,7 @@ func open_passage(
 			Enums.Direction.LEFT
 		)
 
+
 		chunk_a.add_road(
 			Enums.Direction.RIGHT
 		)
@@ -223,6 +232,18 @@ func open_passage(
 			Enums.Direction.LEFT
 		)
 
+
+		set_biome_transition(
+			chunk_a,
+			Enums.Direction.RIGHT,
+			chunk_b,
+			Enums.Direction.LEFT
+		)
+
+
+	## -------------------------
+	## BがAの左
+	## -------------------------
 
 	elif delta == Vector2i.LEFT:
 
@@ -234,6 +255,7 @@ func open_passage(
 			Enums.Direction.RIGHT
 		)
 
+
 		chunk_a.add_road(
 			Enums.Direction.LEFT
 		)
@@ -242,6 +264,18 @@ func open_passage(
 			Enums.Direction.RIGHT
 		)
 
+
+		set_biome_transition(
+			chunk_a,
+			Enums.Direction.LEFT,
+			chunk_b,
+			Enums.Direction.RIGHT
+		)
+
+
+	## -------------------------
+	## BがAの下
+	## -------------------------
 
 	elif delta == Vector2i.DOWN:
 
@@ -253,6 +287,7 @@ func open_passage(
 			Enums.Direction.UP
 		)
 
+
 		chunk_a.add_road(
 			Enums.Direction.DOWN
 		)
@@ -261,6 +296,18 @@ func open_passage(
 			Enums.Direction.UP
 		)
 
+
+		set_biome_transition(
+			chunk_a,
+			Enums.Direction.DOWN,
+			chunk_b,
+			Enums.Direction.UP
+		)
+
+
+	## -------------------------
+	## BがAの上
+	## -------------------------
 
 	elif delta == Vector2i.UP:
 
@@ -272,6 +319,7 @@ func open_passage(
 			Enums.Direction.DOWN
 		)
 
+
 		chunk_a.add_road(
 			Enums.Direction.UP
 		)
@@ -281,16 +329,46 @@ func open_passage(
 		)
 
 
+		set_biome_transition(
+			chunk_a,
+			Enums.Direction.UP,
+			chunk_b,
+			Enums.Direction.DOWN
+		)
+
+
 	else:
 
 		push_error(
 			"InterBiomeGenerator: "
-			+ "隣接していないチャンクが指定されました。"
+			+ "隣接していないChunkが指定されました。"
 		)
 
-		return
+
+## =========================
+## 境界Biome情報を設定
+## =========================
+
+func set_biome_transition(
+	chunk_a: ChunkData,
+	direction_a: Enums.Direction,
+	chunk_b: ChunkData,
+	direction_b: Enums.Direction
+) -> void:
+
+	chunk_a.sub_biome = (
+		chunk_b.main_biome
+	)
+
+	chunk_a.sub_biome_direction = (
+		int(direction_a)
+	)
 
 
-	## バイオーム境界Room用
-	chunk_a.sub_biome = chunk_b.main_biome
-	chunk_b.sub_biome = chunk_a.main_biome
+	chunk_b.sub_biome = (
+		chunk_a.main_biome
+	)
+
+	chunk_b.sub_biome_direction = (
+		int(direction_b)
+	)
