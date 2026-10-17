@@ -1,229 +1,60 @@
-6. この方式で今後どうRoomを増やすか
+0. バイオーム追加
+res://resources/biome/　にbiomeData型のリソースを作成
 
-これからは、
+インスペクタの
+ DisplayNameにファイル名と同名
+ BackGroundColorは好きなもの
+を指定
 
-小マップを作る
-        ↓
-RoomData.tresを作る
-        ↓
-Biomeを指定
-        ↓
-Exitsを指定
-        ↓
-Available Roomsへ追加
-        ↓
-生成対象になる
+1. .tscn作成
 
-だけです。
+res://scenes/rooms/(バイオーム名フォルダ)/　に一部屋ぶんのシーンを作成
+ファイル名は　(バイオーム名)(LRUD)(接尾辞(番号とかchestとか？))
+シーンのrootはNode2DでRoom.gdをアタッチ
+出口の種類に応じて以下を配置
 
-例えば同じ Forest_1010 に対して、
+1.1. 部屋に遷移してくるときのスポーン位置
 
-Forest_LR_A.tscn
-Forest_LR_B.tscn
-Forest_LR_C.tscn
+Marker2Dに以下の名前を付けるとスポーン位置として機能
+　SpawnFromLeft
+  SpawnFromRight
+  SpawnFromUp
+  SpawnFromDown
 
-の3種類を作って、
+1.2. 隣の部屋に遷移するエリア
 
-Forest_LR_A.tres
-Forest_LR_B.tres
-Forest_LR_C.tres
+RoomExit.gdをアタッチしたArea2Dを作成
+以下の名前にする
+　ExitLeft
+　ExitRight
+　ExitUp
+　ExitDown
 
-を登録すれば、RoomGenerator は3候補からランダムに1つ選びます。
+子にCollisionShape2Dを作成
+これが判定になる
 
-これが当初やりたかった、
+1.3. 注意
 
-「右と上方向に通路がある火山バイオームマップ」などを大量に用意して、生成されたチャンク情報に合わせて配置する
+Marker2DはArea2Dよりステージ内側に設置する
+重ねると即座に移動してしまい、外側にするとステージ内側に移動しようとしても別ステージに飛んでしまうため
 
-仕組みのRoom選択部分になります。
 
+2. .tres作成
 
+res://resources/rooms/(バイオーム名)/　で右クリック → New Resource → RoomData
+.tscnと同名にする
 
-3. Forest_LR.tres をAvailable Roomsへ登録
+インスペクタの
+ DisplayNameにファイル名と同名
+ Sceneに.tscn
+ Exitに本数+方向
+を指定
 
-Main.tscn のルート Main を選び、Inspectorを開きます。
 
-Available Rooms
+3. バイオーム登録
 
-を、
+res://resources/biome/　にある(バイオーム名).tresを開く
 
-Size = 1
+インスペクタのRoomsのサイズを増やして2.で作った.tresを登録
 
-にして、
 
-[0] = Forest_LR.tres
-
-を設定してください。
-
-
-
-6. Forest_LRシーンを編集
-
-既存の Forest_LR のシーンを開いてください。
-
-ルートNode2Dを選択して、
-
-Room.gd
-
-をアタッチします。
-
-そして子に、
-
-Marker2D
-
-を2つ追加。
-
-名前を正確に、
-
-SpawnFromLeft
-SpawnFromRight
-
-にします。
-
-位置は自由です。
-
-例えば横長のRoomなら、
-
-SpawnFromLeft
-
-    ↓
-    ●
-┌────────────────────────────┐
-│                            │
-│                            │
-│                         ●  │
-└────────────────────────────┘
-                          ↑
-                  SpawnFromRight
-
-でも構いません。
-
-左右で高さが揃っている必要すらありません。
-
-7. Forest_LRにExitを作る
-
-次にルートの子として、
-
-Area2D
-
-を追加して、
-
-ExitLeft
-
-という名前にします。
-
-RoomExit.gd をアタッチ。
-
-Inspectorで、
-
-Direction = LEFT
-
-にします。
-
-その子に、
-
-CollisionShape2D
-
-を追加してください。
-
-Shapeは例えば、
-
-RectangleShape2D
-
-でOKです。
-
-ExitLeft
-
-という名前にします。
-
-RoomExit.gd をアタッチ。
-
-Inspectorで、
-
-Direction = LEFT
-
-にします。
-
-その子に、
-
-CollisionShape2D
-
-を追加してください。
-
-Shapeは例えば、
-
-RectangleShape2D
-
-でOKです。
-
-
-5. Forest_LR / Forest_RDをもう一度確認
-
-実際の接触遷移には Area2D のCollisionShapeが必要です。
-
-Forest_LR は例えば、
-
-Forest_LR
-├─ SpawnFromLeft        Marker2D
-├─ SpawnFromRight       Marker2D
-│
-├─ ExitLeft             Area2D + RoomExit.gd
-│  └─ CollisionShape2D
-│
-└─ ExitRight            Area2D + RoomExit.gd
-   └─ CollisionShape2D
-
-です。
-
-ExitLeft：
-
-Direction = LEFT
-
-ExitRight：
-
-Direction = RIGHT
-
-にします。
-
-6. SpawnPointはExitと少し離す
-
-これはかなり重要です。
-
-例えばRIGHTから隣Roomに移動すると、
-
-次Roomの SpawnFromLeft
-
-にPlayerが出ます。
-
-このMarkerを ExitLeft のCollisionShape内部に置いてしまうと、
-
-Room A → Room B
-          ↓
-SpawnFromLeft
-          ↓
-即座にExitLeftへ接触
-          ↓
-Room Aへ戻る
-
-という往復が発生する可能性があります。
-
-なので例えば、
-
-┌───────────────────────
-
-ExitLeft
-■■
-■■      ● SpawnFromLeft
-■■
-■■
-
-└───────────────────────
-
-のように、SpawnPointは出口判定Areaの内側ではなく、Room側へ少し離して配置してください。
-
-同じことが、
-
-SpawnFromRight
-SpawnFromUp
-SpawnFromDown
-
-にも当てはまります。
