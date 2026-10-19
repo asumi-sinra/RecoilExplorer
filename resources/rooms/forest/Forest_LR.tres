@@ -8,3 +8,5 @@ script = ExtResource("1_jblbg")
 display_name = "Forest_LR"
 scene = ExtResource("1_shr1j")
 exits = Array[int]([1, 3])
+configure_exits_at_runtime = false
+debug_variant = 0

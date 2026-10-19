@@ -1,27 +1,17 @@
-[gd_scene load_steps=9 format=3 uid="uid://fbjb5v62f5r8"]
+[gd_scene load_steps=8 format=3 uid="uid://fbjb5v62f5r8"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_tn8ap"]
-[ext_resource type="Script" path="res://resources/BiomeData.gd" id="2_3wel0"]
 [ext_resource type="Resource" uid="uid://4xhiv3gxanta" path="res://resources/biome/Forest.tres" id="2_p5ifv"]
 [ext_resource type="Resource" uid="uid://dkt40haojay4l" path="res://resources/biome/Volcano.tres" id="3_lutjb"]
+[ext_resource type="Resource" uid="uid://dgjr2e852e4a2" path="res://resources/biome/Subway.tres" id="4_mpf7v"]
+[ext_resource type="PackedScene" uid="uid://beg3urtup17bd" path="res://scenes/rooms/debug/DebugRoom.tscn" id="5_cs4rp"]
 [ext_resource type="PackedScene" uid="uid://cv5xj5d6kf0i8" path="res://scenes/player/Player.tscn" id="7_056s4"]
 [ext_resource type="Script" path="res://scripts/UI/Camera.gd" id="8_f4wwk"]
 
-[sub_resource type="Resource" id="Resource_lk8wf"]
-script = ExtResource("2_3wel0")
-display_name = "Show"
-background_color = Color(1, 1, 1, 1)
-rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([])
-
-[sub_resource type="Resource" id="Resource_6lsdr"]
-script = ExtResource("2_3wel0")
-display_name = "Desert"
-background_color = Color(1, 1, 0, 1)
-rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([])
-
 [node name="Main" type="Node2D"]
 script = ExtResource("1_tn8ap")
-available_biomes = Array[ExtResource("2_3wel0")]([ExtResource("2_p5ifv"), ExtResource("3_lutjb"), SubResource("Resource_lk8wf"), SubResource("Resource_6lsdr")])
+available_biomes = Array[Resource("res://resources/BiomeData.gd")]([ExtResource("2_p5ifv"), ExtResource("3_lutjb"), ExtResource("4_mpf7v")])
+debug_room_scene = ExtResource("5_cs4rp")
 
 [node name="Player" parent="." instance=ExtResource("7_056s4")]
 

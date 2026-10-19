@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BiomeData" load_steps=2 format=3 uid="uid://dgjr2e852e4a2"]
+
+[ext_resource type="Script" path="res://resources/BiomeData.gd" id="1_noy75"]
+
+[resource]
+script = ExtResource("1_noy75")
+display_name = "Subway"
+background_color = Color(0.383597, 0.383597, 0.383597, 1)
+rooms = Array[Resource("res://scripts/world/data/RoomData.gd")]([])

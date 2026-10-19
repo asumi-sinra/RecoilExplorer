@@ -51,3 +51,7 @@ position = Vector2(-83, 247)
 position = Vector2(607, 654)
 scale = Vector2(200, 10)
 shape = SubResource("RectangleShape2D_r6qk5")
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D/CollisionShape2D"]
+offset_right = 40.0
+offset_bottom = 40.0

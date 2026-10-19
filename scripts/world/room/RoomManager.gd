@@ -1,3 +1,4 @@
+
 extends Node2D
 class_name RoomManager
 
@@ -62,15 +63,11 @@ func initialize(
 
 	world = world_data
 
-
 	if initial_chunk == null:
-
 		push_error(
 			"RoomManager: initial_chunkがnullです。"
 		)
-
 		return false
-
 
 	return load_chunk(
 		initial_chunk,
@@ -110,33 +107,25 @@ func load_chunk(
 ) -> bool:
 
 	if chunk == null:
-
 		push_error(
 			"RoomManager: 読み込むChunkがnullです。"
 		)
-
 		return false
 
-
 	if chunk.room == null:
-
 		push_error(
 			"RoomManager: ChunkにRoomDataがありません。 "
 			+ "chunk="
 			+ str(chunk.coord)
 		)
-
 		return false
 
-
 	if chunk.room.scene == null:
-
 		push_error(
 			"RoomManager: RoomDataにSceneがありません。 "
 			+ "room="
 			+ chunk.room.display_name
 		)
-
 		return false
 
 
@@ -148,9 +137,7 @@ func load_chunk(
 		chunk.room.scene.instantiate()
 	)
 
-
 	if not instance is RoomScene:
-
 		push_error(
 			"RoomManager: "
 			+ chunk.room.display_name
@@ -159,9 +146,7 @@ func load_chunk(
 		)
 
 		instance.free()
-
 		return false
-
 
 	var new_room: RoomScene = (
 		instance as RoomScene
@@ -170,10 +155,7 @@ func load_chunk(
 
 	## -------------------------
 	## Chunk情報を渡す
-	##
-	## add_child()より前に呼ぶことで、
-	## RoomScene._ready()が走る時点で
-	## Biome情報が設定済みになる
+	## add_child()より前に呼び出す
 	## -------------------------
 
 	new_room.setup_from_chunk(
@@ -182,10 +164,27 @@ func load_chunk(
 
 
 	## -------------------------
-	## 古いRoom削除
+	## 新しいRoomの出口を無効化
+	## Player配置と物理判定が安定するまで
+	## 出口イベントを発生させない
 	## -------------------------
 
-	if current_room != null:
+	new_room.set_exits_enabled(
+		false
+	)
+
+
+	## -------------------------
+	## 古いRoomの出口を先に無効化
+	## queue_free()だけでは削除まで
+	## ノードが残るため、先にセンサーを止める
+	## -------------------------
+
+	if is_instance_valid(current_room):
+
+		current_room.set_exits_enabled(
+			false
+		)
 
 		current_room.queue_free()
 
@@ -196,11 +195,9 @@ func load_chunk(
 
 	new_room.position = Vector2.ZERO
 
-
 	add_child(
 		new_room
 	)
-
 
 	current_room = new_room
 	current_chunk = chunk
@@ -208,10 +205,13 @@ func load_chunk(
 
 	## -------------------------
 	## Exit通知
+	##
+	## 発生元Roomをコールバックに束縛する。
+	## 古いRoomから届いたイベントは無視する。
 	## -------------------------
 
 	current_room.exit_requested.connect(
-		_on_room_exit_requested
+		_on_room_exit_requested.bind(current_room)
 	)
 
 
@@ -230,7 +230,6 @@ func load_chunk(
 			)
 		)
 
-
 		if spawn_marker == null:
 
 			push_error(
@@ -243,12 +242,31 @@ func load_chunk(
 				)
 			)
 
-
 		else:
 
+			## SpawnPointへ移動
 			player.global_position = (
 				spawn_marker.global_position
 			)
+
+			## CharacterBody2Dの速度をリセット
+			if player is CharacterBody2D:
+				(player as CharacterBody2D).velocity = Vector2.ZERO
+
+			## 移動入力が離されるまでロック
+			if player.has_method("lock_movement_until_release"):
+				player.call("lock_movement_until_release")
+
+
+	## -------------------------
+	## 出口センサーの遅延有効化
+	## 物理フレームを2回待ってから有効化する
+	## -------------------------
+
+	call_deferred(
+		"_enable_room_exits_after_physics",
+		new_room
+	)
 
 
 	print(
@@ -274,14 +292,52 @@ func load_chunk(
 		)
 	)
 
-
 	room_loaded.emit(
 		chunk.coord,
 		chunk.room.display_name
 	)
 
-
 	return true
+
+
+## =========================
+## 物理フレーム待機後に出口を有効化
+## =========================
+
+func _enable_room_exits_after_physics(
+	room: RoomScene
+) -> void:
+
+	if not is_instance_valid(room):
+		return
+
+	## 1回目の物理フレームを待つ
+	await get_tree().physics_frame
+
+	## 待機中に別のRoomへ移動していないか確認
+	if not is_instance_valid(room):
+		return
+
+	if room != current_room:
+		return
+
+	## 2回目の物理フレームを待つ
+	await get_tree().physics_frame
+
+	## 待機中に別のRoomへ移動していないか再確認
+	if not is_instance_valid(room):
+		return
+
+	if room != current_room:
+		return
+
+	if room.is_queued_for_deletion():
+		return
+
+	## Player配置後、物理判定が更新された段階で有効化
+	room.set_exits_enabled(
+		true
+	)
 
 
 ## =========================
@@ -289,8 +345,38 @@ func load_chunk(
 ## =========================
 
 func _on_room_exit_requested(
-	direction: Enums.Direction
+	direction: Enums.Direction,
+	source_room: RoomScene
 ) -> void:
+
+	## 古いRoomから届いたイベントは無視する
+	if source_room != current_room:
+
+		var current_room_name: String = "null"
+
+		if is_instance_valid(current_room):
+			current_room_name = str(
+				current_room.name
+			)
+
+		var source_room_name: String = "null"
+
+		if is_instance_valid(source_room):
+			source_room_name = str(
+				source_room.name
+			)
+
+		print(
+			"RoomManager: 古いRoomの出口イベントを無視。 ",
+			"source=",
+			source_room_name,
+			" current=",
+			current_room_name,
+			" direction=",
+			get_direction_name(direction)
+		)
+
+		return
 
 	request_transition(
 		direction
@@ -306,17 +392,12 @@ func request_transition(
 ) -> void:
 
 	if is_transitioning:
-
 		return
-
 
 	if world == null:
-
 		return
 
-
 	if current_chunk == null:
-
 		return
 
 
@@ -369,12 +450,10 @@ func request_transition(
 				current_chunk.coord
 			)
 
-
 			phase_exit_requested.emit(
 				int(direction),
 				current_chunk.coord
 			)
-
 
 		else:
 
@@ -383,7 +462,6 @@ func request_transition(
 				+ "chunk="
 				+ str(current_chunk.coord)
 			)
-
 
 		return
 
@@ -413,7 +491,6 @@ func request_transition(
 		)
 	)
 
-
 	is_transitioning = true
 
 
@@ -421,17 +498,15 @@ func request_transition(
 	## Player停止
 	## -------------------------
 
-	var previous_process_mode: int = (
+	var previous_process_mode: Node.ProcessMode = (
 		Node.PROCESS_MODE_INHERIT
 	)
-
 
 	if player != null:
 
 		previous_process_mode = (
 			player.process_mode
 		)
-
 
 		player.process_mode = (
 			Node.PROCESS_MODE_DISABLED
@@ -443,7 +518,6 @@ func request_transition(
 	## -------------------------
 
 	if transition_layer != null:
-
 		await transition_layer.fade_out()
 
 
@@ -462,7 +536,6 @@ func request_transition(
 	## -------------------------
 
 	if transition_layer != null:
-
 		await transition_layer.fade_in()
 
 
@@ -471,11 +544,9 @@ func request_transition(
 	## -------------------------
 
 	if player != null:
-
 		player.process_mode = (
 			previous_process_mode
 		)
-
 
 	if success:
 
@@ -487,7 +558,6 @@ func request_transition(
 			" -> chunk ",
 			next_chunk.coord
 		)
-
 
 	is_transitioning = false
 
@@ -501,25 +571,19 @@ func is_phase_exit(
 ) -> bool:
 
 	if current_chunk == null:
-
 		return false
-
 
 	if (
 		direction == Enums.Direction.DOWN
 		and current_chunk.is_prev_phase_gate
 	):
-
 		return true
-
 
 	if (
 		direction == Enums.Direction.UP
 		and current_chunk.is_next_phase_gate
 	):
-
 		return true
-
 
 	return false
 
@@ -535,24 +599,16 @@ func get_opposite_direction(
 	match direction:
 
 		Enums.Direction.DOWN:
-
 			return Enums.Direction.UP
 
-
 		Enums.Direction.LEFT:
-
 			return Enums.Direction.RIGHT
 
-
 		Enums.Direction.UP:
-
 			return Enums.Direction.DOWN
 
-
 		Enums.Direction.RIGHT:
-
 			return Enums.Direction.LEFT
-
 
 	return Enums.Direction.DOWN
 
@@ -566,9 +622,7 @@ func get_biome_name(
 ) -> String:
 
 	if biome == null:
-
 		return "null"
-
 
 	return biome.display_name
 
@@ -584,23 +638,15 @@ func get_direction_name(
 	match direction:
 
 		Enums.Direction.DOWN:
-
 			return "DOWN"
 
-
 		Enums.Direction.LEFT:
-
 			return "LEFT"
 
-
 		Enums.Direction.UP:
-
 			return "UP"
 
-
 		Enums.Direction.RIGHT:
-
 			return "RIGHT"
-
 
 	return "NONE"
